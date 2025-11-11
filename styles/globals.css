@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply text-gray-600 hover:text-black transition-colors;
+  }
+}

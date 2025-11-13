@@ -1,17 +1,19 @@
 import React from 'react'
-import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
+async function getMaintenanceTickets() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/maintenance/`, { cache: 'no-store' })
+  if (!res.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  return res.json()
+}
+
 export default async function MaintenancePage() {
-  const tickets = await prisma.maintenance.findMany({
-    take: 50,
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
+  const tickets = await getMaintenanceTickets()
 
   const statusColor = (status: string) => {
     switch (status) {
@@ -19,6 +21,8 @@ export default async function MaintenancePage() {
         return 'bg-red-600'
       case 'IN_PROGRESS':
         return 'bg-yellow-600'
+      case 'RESOLVED':
+        return 'bg-blue-600'
       case 'CLOSED':
         return 'bg-green-600'
       default:

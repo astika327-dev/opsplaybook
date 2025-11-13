@@ -1,16 +1,18 @@
 import React from 'react'
-import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 
+async function getInventoryItems() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory-items/`, { cache: 'no-store' })
+  if (!res.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  return res.json()
+}
+
 export default async function InventoryPage() {
-  const items = await prisma.inventoryItem.findMany({
-    take: 200,
-    orderBy: {
-      name: 'asc'
-    }
-  })
+  const items = await getInventoryItems()
 
   return (
     <section>

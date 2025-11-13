@@ -1,24 +1,28 @@
 import React from 'react'
-import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
+async function getRooms() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms/`, { cache: 'no-store' })
+  if (!res.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  return res.json()
+}
+
 export default async function RoomsPage() {
-  const rooms = await prisma.room.findMany({
-    take: 50,
-    orderBy: {
-      name: 'asc'
-    }
-  })
+  const rooms = await getRooms()
 
   const statusColor = (status: string) => {
     switch (status) {
-      case 'READY':
+      case 'AVAILABLE':
         return 'bg-green-600'
-      case 'IN_PROGRESS':
+      case 'OCCUPIED':
         return 'bg-yellow-600'
+      case 'NEEDS_CLEANING':
+        return 'bg-orange-600'
       case 'NOT_READY':
         return 'bg-red-600'
       default:
